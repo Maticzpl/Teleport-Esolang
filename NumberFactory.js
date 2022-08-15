@@ -23,8 +23,9 @@ async function main() {
         let tpIn = [];
         let tpOut = [];
         let starts = [];
-        let regex = /\/\/.*\r\n/gm;
-        code += "\r\n\r\n"; // don't ask
+        let regex = /\/\/.*\n/g;
+        code = code.replace(/\r\n/g,"\n");
+        code += "\n"; // don't ask
         code = code.replace(regex, "\n") //wywal komentarze
         let lines = code.split("\n");
         for (let i = 0; i < lines.length; i++) {
