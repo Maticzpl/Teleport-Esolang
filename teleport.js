@@ -1,7 +1,3 @@
-/*
-The ! symbol starts a new execution block
-Each execution block gets called once upon launching the program (from top to bottom)
-*/
 const prompt = require("prompt-sync")({ sigint: true });  
 const fs = require('fs');
 async function main() {
@@ -31,26 +27,73 @@ async function main() {
         for (let i = 0; i < lines.length; i++) {
             let line = lines[i];
             line = line.trim();
+
+            if (line == "") 
+                continue;
+            
+
             if (line.startsWith("[")) {
                 let val = line.split("[")[1].split("]")[0];
+                
+                if (val == '') {
+                    throw `ERROR Line ${i+1}: No value found inside square brackets.`;                    
+                }
+                if (!line.includes("]")) {
+                    throw `ERROR Line ${i+1}: No closing bracket.`;                    
+                }
+
                 val = val.replace("{","[").replace("}","]");
                 vars[i] = eval(val); //xd eval
             }
-            if (line.startsWith("!")) {
+            else if (line.startsWith("!")) {
                 starts.push({line: i});
             }
+            else if (line.startsWith("|")) { }
+            else if (line.startsWith("<")) { }
+            else if (line.startsWith("=")) { }
+            else if (line.startsWith("?")) { }
+            else {
+                throw `ERROR Line ${i+1}: Invalid character.`;    
+            }
+                
+            let arrowCount = 0
             if (line.includes("->")) {
+                arrowCount++;
                 let tpName = line.split("#")[1];
+                if (tpName == undefined) {
+                    throw `ERROR Line ${i+1}: "#" symbol missing after ->.`;                    
+                }
+
                 tpOut[i] = {name: tpName, value: undefined};
             }
             if (line.includes("<-")) {
+                arrowCount++;
                 let tpName = line.split("#")[1];
+                if (tpName == undefined) {
+                    throw `ERROR Line ${i+1}: "#" symbol missing after <-.`;                    
+                }
+
                 tpIn[i] = {name: tpName, sendSignal: false};
             }
             if (line.includes("<<")) {
+                arrowCount++;
                 let tpName = line.split("#")[1];
+                if (tpName == undefined) {
+                    throw `ERROR Line ${i+1}: "#" symbol missing after <<.`;                    
+                }
+                
                 tpIn[i] = {name: tpName, sendSignal: true};
             }
+            
+            if (line.includes("#") && arrowCount == 0) {
+                throw `ERROR Line ${i+1}: arrow missing before "#" symbol.`;                   
+            }
+
+            if (arrowCount != 1 && arrowCount != 0) {
+                throw `ERROR Line ${i+1}: too many arrows.`;                      
+            }
+
+
         }
         function findTp(array, equals) {
             for (const el of array) {
@@ -133,6 +176,20 @@ async function main() {
             }
             if (line.startsWith("<tonum>")) {
                 return parseFloat(val)
+            }
+            if (line.startsWith("<toarr>")) {
+                return Array.from(val);
+            }
+            if (line.startsWith("<tostr>")) {
+                if (typeof(val) == "object") {
+                    let out = "";
+                    for (const v of val) {
+                        out += v
+                    }
+                    return out;
+                }
+                else
+                    return toString(val);
             }
         }
         function execute(lines, lineNum, val = undefined) {    
