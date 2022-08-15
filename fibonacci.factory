@@ -1,0 +1,29 @@
+!
+["To what number do you want the fibonacci sequence to go? "]
+<input> // Prompts user for input
+| -> #LIMIT // Saves input as LIMIT
+
+!
+[0] << #SETA //Declares 3 variables A, B and C and their getters and setters
+| -> #GETA
+
+!
+[1] << #SETB
+| -> #GETB
+
+!
+[0] << #SETC
+| -> #GETC
+
+! << #LOOP
+| <- #GETA  // Fetches variable A
+<print>    // Prints A
+<add> <- #GETB // Adds B to A
+| -> #SETC  // Saves the result to c
+| <- #GETB  // Gets B
+| -> #SETA  // Writes B to A
+| <- #GETC  // Gets C
+| -> #SETB  // Writes C to B
+| <- #LIMIT // Gets LIMIT
+<mor> <- #GETA // Compares LIMIT to A  (LIMIT > A)
+? -> #LOOP  // If (LIMIT > A) jumps to LOOP

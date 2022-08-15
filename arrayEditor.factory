@@ -1,0 +1,24 @@
+!
+[{2,1,3,7,6,9,4,2,0}] << #setTab //Gets called on ->#setTab
+<print>
+| -> #getTab // Updates getTab to current value
+
+! << #LOOP
+= //Sets current value to NULL to avoid overwriting the string below
+["Input index: "] // Sets current value to "Input index: "
+<input> //Prompts user for input
+| -> #k //Saves input in k
+= //Sets current value to NULL to avoid overwriting the string below
+["Input value: "] // Sets current value to "Input value: "
+<input> //Prompts user for input
+<tonum> //Makes the value a number (by default <input> returns a string)
+| -> #v //Saves input in v
+=
+[{}] // Creates an empty array
+<set> <- #k //Adds k and v to the array
+<set> <- #v
+| -> #kv // Saves array as kv
+| <- #getTab // Fetches previous array
+<set> <- #kv // Sets the array according to the kv table [key, value]
+| -> #setTab // Saves modified table
+| -> #LOOP   // Jumps to | << #LOOP
